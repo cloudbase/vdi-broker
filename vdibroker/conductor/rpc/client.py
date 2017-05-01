@@ -46,3 +46,21 @@ class ConductorClient(object):
     def delete_application(self, ctxt, application_id):
         return self._client.call(
             ctxt, 'delete_application', application_id=application_id)
+
+    def create_remote_session(self, ctxt, application_id):
+        return self._client.call(
+            ctxt, 'create_remote_session',
+            application_id=application_id)
+
+    def get_remote_sessions(self, ctxt, application_id):
+        return self._client.call(
+            ctxt, 'get_remote_sessions',
+            application_id=application_id)
+
+    def get_remote_session(self, ctxt, session_id):
+        return self._client.call(
+            ctxt, 'get_remote_session', session_id=session_id)
+
+    def delete_remote_session(self, ctxt, session_id):
+        return self._client.call(
+            ctxt, 'delete_remote_session', session_id=session_id)

@@ -29,14 +29,27 @@ class SessionController(api_wsgi.Controller):
         self._session_api = api.API()
         super(SessionController, self).__init__()
 
-    def create(self, req, application_id, body):
-        return session_view.single(req, self._endpoint_api.create(
+    def show(self, req, application_id, id):
+        session = self._session_api.get_session(
+            req.environ["vdibroker.context"], id)
+        if not session:
+            raise exc.HTTPNotFound()
+
+        return session_view.single(req, session)
+
+    def index(self, req, application_id):
+        return session_view.collection(
+            req, self._session_api.get_sessions(
+                req.environ['vdibroker.context'], application_id))
+
+    def create(self, req, application_id):
+        return session_view.single(req, self._session_api.create(
             req.environ['vdibroker.context'], application_id))
 
     def delete(self, req, application_id, id):
         try:
             self._session_api.delete(
-                req.environ['vdibroker.context'], application_id, id)
+                req.environ['vdibroker.context'], id)
             raise exc.HTTPNoContent()
         except exception.NotFound as ex:
             raise exc.HTTPNotFound(explanation=ex.msg)

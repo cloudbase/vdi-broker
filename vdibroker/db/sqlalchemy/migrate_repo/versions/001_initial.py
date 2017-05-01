@@ -43,8 +43,30 @@ def upgrade(migrate_engine):
         mysql_charset='utf8'
     )
 
+    session = sqlalchemy.Table(
+        'session', meta,
+        sqlalchemy.Column("id", sqlalchemy.String(36), primary_key=True,
+                          default=lambda: str(uuid.uuid4())),
+        sqlalchemy.Column('created_at', sqlalchemy.DateTime),
+        sqlalchemy.Column('updated_at', sqlalchemy.DateTime),
+        sqlalchemy.Column('deleted_at', sqlalchemy.DateTime),
+        sqlalchemy.Column('deleted', sqlalchemy.String(36)),
+        sqlalchemy.Column("user_id", sqlalchemy.String(255), nullable=False),
+        sqlalchemy.Column("project_id", sqlalchemy.String(255),
+                          nullable=False),
+        sqlalchemy.Column("instance_id", sqlalchemy.String(255),
+                          nullable=False),
+        sqlalchemy.Column("connection_info", sqlalchemy.Text, nullable=False),
+        sqlalchemy.Column("application_id", sqlalchemy.String(36),
+                          sqlalchemy.ForeignKey(
+                              'application.id'), nullable=False),
+        mysql_engine='InnoDB',
+        mysql_charset='utf8'
+    )
+
     tables = (
         application,
+        session
     )
 
     for index, table in enumerate(tables):

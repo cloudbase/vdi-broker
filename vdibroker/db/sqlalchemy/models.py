@@ -17,8 +17,27 @@ import uuid
 from oslo_db.sqlalchemy import models
 import sqlalchemy
 from sqlalchemy.ext import declarative
+from sqlalchemy import orm
+
+from vdibroker.db.sqlalchemy import types
 
 BASE = declarative.declarative_base()
+
+
+class RemoteSession(BASE, models.TimestampMixin, models.SoftDeleteMixin,
+                    models.ModelBase):
+    __tablename__ = 'session'
+
+    id = sqlalchemy.Column(sqlalchemy.String(36),
+                           default=lambda: str(uuid.uuid4()),
+                           primary_key=True)
+    user_id = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
+    project_id = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
+    instance_id = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
+    connection_info = sqlalchemy.Column(types.Json, nullable=False)
+    application_id = sqlalchemy.Column(
+        sqlalchemy.String(36),
+        sqlalchemy.ForeignKey('application.id'), nullable=False)
 
 
 class Application(BASE, models.TimestampMixin, models.SoftDeleteMixin,
@@ -35,3 +54,8 @@ class Application(BASE, models.TimestampMixin, models.SoftDeleteMixin,
     description = sqlalchemy.Column(sqlalchemy.String(1024), nullable=True)
     image_id = sqlalchemy.Column(sqlalchemy.String(36), nullable=False)
     pool_size = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
+    sessions = orm.relationship(RemoteSession, cascade="all,delete",
+                                backref=orm.backref('application'),
+                                primaryjoin="and_(RemoteSession."
+                                "application_id==Application.id, "
+                                "Application.deleted=='0')")

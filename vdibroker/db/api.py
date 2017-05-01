@@ -95,3 +95,34 @@ def delete_application(context, application_id):
         project_id=context.tenant, id=application_id).soft_delete()
     if count == 0:
         raise exception.NotFound("0 entries were soft deleted")
+
+
+@enginefacade.writer
+def add_remote_session(context, remote_session):
+    remote_session.user_id = context.user
+    remote_session.project_id = context.tenant
+    context.session.add(remote_session)
+
+
+@enginefacade.reader
+def get_remote_session(context, session_id):
+    q = _soft_delete_aware_query(context, models.RemoteSession)
+    return q.filter(
+        models.RemoteSession.project_id == context.tenant,
+        models.RemoteSession.id == session_id).first()
+
+
+@enginefacade.reader
+def get_remote_sessions(context, application_id):
+    q = _soft_delete_aware_query(context, models.RemoteSession)
+    return q.filter(
+        models.RemoteSession.project_id == context.tenant,
+        models.RemoteSession.application_id == application_id).all()
+
+
+@enginefacade.writer
+def delete_remote_session(context, session_id):
+    count = _soft_delete_aware_query(context, models.RemoteSession).filter_by(
+        project_id=context.tenant, id=session_id).soft_delete()
+    if count == 0:
+        raise exception.NotFound("0 entries were soft deleted")

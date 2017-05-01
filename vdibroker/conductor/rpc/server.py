@@ -37,6 +37,16 @@ def application_synchronized(func):
     return wrapper
 
 
+def remote_session_synchronized(func):
+    @functools.wraps(func)
+    def wrapper(self, ctxt, session_id, *args, **kwargs):
+        @lockutils.synchronized(session_id)
+        def inner():
+            return func(self, ctxt, session_id, *args, **kwargs)
+        return inner()
+    return wrapper
+
+
 class ConductorServerEndpoint(object):
     def create_application(self, ctxt, name, description, application_type,
                            image_id, pool_size):
@@ -64,3 +74,26 @@ class ConductorServerEndpoint(object):
     @application_synchronized
     def delete_application(self, ctxt, application_id):
         db_api.delete_application(ctxt, application_id)
+
+    def create_remote_session(self, ctxt, application_id):
+        remote_session = models.RemoteSession()
+        remote_session.application_id = application_id
+        remote_session.instance_id = "xxxxx"
+        remote_session.connection_info = {"some": "data"}
+        db_api.add_remote_session(ctxt, remote_session)
+        LOG.info("Remote session created: %s", remote_session.id)
+        return self.get_remote_session(ctxt, remote_session.id)
+
+    def get_remote_sessions(self, ctxt, application_id):
+        return db_api.get_remote_sessions(ctxt, application_id)
+
+    @remote_session_synchronized
+    def get_remote_session(self, ctxt, session_id):
+        session = db_api.get_remote_session(ctxt, session_id)
+        if not session:
+            raise exception.NotFound("Remote session not found")
+        return session
+
+    @remote_session_synchronized
+    def delete_remote_session(self, ctxt, session_id):
+        db_api.delete_remote_session(ctxt, session_id)

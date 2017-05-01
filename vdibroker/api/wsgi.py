@@ -993,7 +993,6 @@ class Resource(Application):
 
     def dispatch(self, method, request, action_args):
         """Dispatch a call to the action-specific method."""
-
         return method(req=request, **action_args)
 
 
