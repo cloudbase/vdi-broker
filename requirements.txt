@@ -15,5 +15,6 @@ oslo.versionedobjects
 paste
 pbr
 python-keystoneclient
+python-novaclient
 sqlalchemy
 webob
