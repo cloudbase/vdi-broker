@@ -34,7 +34,7 @@ class RemoteSession(BASE, models.TimestampMixin, models.SoftDeleteMixin,
     user_id = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
     project_id = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
     instance_id = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
-    connection_info = sqlalchemy.Column(types.Json, nullable=False)
+    connection_data = sqlalchemy.Column(types.Json, nullable=False)
     application_id = sqlalchemy.Column(
         sqlalchemy.String(36),
         sqlalchemy.ForeignKey('application.id'), nullable=False)
@@ -52,8 +52,9 @@ class Application(BASE, models.TimestampMixin, models.SoftDeleteMixin,
     name = sqlalchemy.Column(sqlalchemy.String(255), nullable=False)
     type = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
     description = sqlalchemy.Column(sqlalchemy.String(1024), nullable=True)
-    image_id = sqlalchemy.Column(sqlalchemy.String(36), nullable=False)
+    image_data = sqlalchemy.Column(types.Json, nullable=False)
     pool_size = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
+    instances_data = sqlalchemy.Column(types.List, nullable=False)
     sessions = orm.relationship(RemoteSession, cascade="all,delete",
                                 backref=orm.backref('application'),
                                 primaryjoin="and_(RemoteSession."

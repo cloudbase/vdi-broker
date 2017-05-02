@@ -135,6 +135,10 @@ class Invalid(VDIBrokerException):
     code = 400
 
 
+class InvalidContentType(Invalid):
+    pass
+
+
 class InvalidResults(Invalid):
     message = _("The results are invalid.")
 
@@ -153,8 +157,13 @@ class InvalidAuthKey(Invalid):
     message = _("Invalid auth key: %(reason)s")
 
 
-class ServiceUnavailable(Invalid):
+class ServiceUnavailable(VDIBrokerException):
     message = _("Service is unavailable at this time.")
+    code = 503
+
+
+class ApplicationInstanceUnavailable(ServiceUnavailable):
+    message = _("No application instance available.")
 
 
 class APIException(VDIBrokerException):

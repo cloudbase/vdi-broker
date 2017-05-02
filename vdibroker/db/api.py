@@ -90,6 +90,13 @@ def add_application(context, application):
 
 
 @enginefacade.writer
+def update_application(context, application):
+    application_ref = get_application(context, application.id)
+    application_ref.update(application)
+    application_ref.save(context.session)
+
+
+@enginefacade.writer
 def delete_application(context, application_id):
     count = _soft_delete_aware_query(context, models.Application).filter_by(
         project_id=context.tenant, id=application_id).soft_delete()

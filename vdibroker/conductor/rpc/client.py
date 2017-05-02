@@ -26,13 +26,13 @@ class ConductorClient(object):
         self._client = rpc.get_client(target)
 
     def create_application(self, ctxt, name, description, application_type,
-                           image_id, pool_size):
+                           image_data, pool_size):
         return self._client.call(
             ctxt, 'create_application',
             name=name,
             application_type=application_type,
             description=description,
-            image_id=image_id,
+            image_data=image_data,
             pool_size=pool_size)
 
     def get_applications(self, ctxt):
@@ -46,6 +46,13 @@ class ConductorClient(object):
     def delete_application(self, ctxt, application_id):
         return self._client.call(
             ctxt, 'delete_application', application_id=application_id)
+
+    def add_application_instances_data(self, ctxt, application_id,
+                                       instances_data):
+        return self._client.call(
+            ctxt, 'add_application_instances_data',
+            application_id=application_id,
+            instances_data=instances_data)
 
     def create_remote_session(self, ctxt, application_id):
         return self._client.call(

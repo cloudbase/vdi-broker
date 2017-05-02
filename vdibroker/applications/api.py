@@ -20,9 +20,9 @@ class API(object):
         self._rpc_client = rpc_client.ConductorClient()
 
     def create(self, ctxt, name, description, application_type,
-               image_id, pool_size):
+               image_data, pool_size):
         return self._rpc_client.create_application(
-            ctxt, name, description, application_type, image_id, pool_size)
+            ctxt, name, description, application_type, image_data, pool_size)
 
     def delete(self, ctxt, application_id):
         return self._rpc_client.delete_application(ctxt, application_id)
@@ -32,3 +32,8 @@ class API(object):
 
     def get_application(self, ctxt, application_id):
         return self._rpc_client.get_application(ctxt, application_id)
+
+    def add_application_instances_data(self, ctxt, application_id,
+                                       instances_data):
+        return self._rpc_client.add_application_instances_data(
+            ctxt, application_id, instances_data)

@@ -48,9 +48,14 @@ class ApplicationController(api_wsgi.Controller):
             name = application["name"]
             description = application.get("description")
             application_type = application["type"]
-            image_id = application["image_id"]
+            image_data = application["image_data"]
+            image_data["image_id"]
+            image_data["flavor_name"]
+            image_data["network_id"]
+            image_data["fip_pool_name"]
+            image_data["sec_group_id"]
             pool_size = application["pool_size"]
-            return name, description, application_type, image_id, pool_size
+            return name, description, application_type, image_data, pool_size
         except Exception as ex:
             LOG.exception(ex)
             if hasattr(ex, "message"):
@@ -61,10 +66,10 @@ class ApplicationController(api_wsgi.Controller):
 
     def create(self, req, body):
         (name, description, application_type,
-         image_id, pool_size) = self._validate_create_body(body)
+         image_data, pool_size) = self._validate_create_body(body)
         return application_view.single(req, self._application_api.create(
             req.environ['vdibroker.context'], name, description,
-            application_type, image_id, pool_size))
+            application_type, image_data, pool_size))
 
     def delete(self, req, id):
         try:

@@ -13,9 +13,12 @@
 # under the License.
 
 import socket
+import time
 
 from oslo_config import cfg
 from oslo_log import log as logging
+
+from vdibroker import exception
 
 CONF = cfg.CONF
 logging.register_options(CONF)
@@ -42,3 +45,25 @@ def walk_class_hierarchy(clazz, encountered=None):
             for subsubclass in walk_class_hierarchy(subclass, encountered):
                 yield subsubclass
             yield subclass
+
+
+def _check_port_open(host, port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.settimeout(1)
+        s.connect((host, port))
+        return True
+    except (ConnectionRefusedError, socket.timeout, OSError):
+        return False
+    finally:
+        s.close()
+
+
+def wait_for_port_connectivity(address, port, max_wait=300):
+    i = 0
+    while not _check_port_open(address, port) and i < max_wait:
+        time.sleep(1)
+        i += 1
+    if i == max_wait:
+        raise exception.VDIBrokerException("Connection failed on port %s" %
+                                           port)

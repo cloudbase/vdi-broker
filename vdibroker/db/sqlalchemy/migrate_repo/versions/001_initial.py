@@ -35,10 +35,11 @@ def upgrade(migrate_engine):
         sqlalchemy.Column("name", sqlalchemy.String(255), nullable=False),
         sqlalchemy.Column("description", sqlalchemy.String(1024),
                           nullable=True),
-        sqlalchemy.Column("image_id", sqlalchemy.String(255),
+        sqlalchemy.Column("image_data", sqlalchemy.Text,
                           nullable=False),
         sqlalchemy.Column("type", sqlalchemy.Integer, nullable=False),
         sqlalchemy.Column("pool_size", sqlalchemy.Integer, nullable=False),
+        sqlalchemy.Column("instances_data", sqlalchemy.Text, nullable=False),
         mysql_engine='InnoDB',
         mysql_charset='utf8'
     )
@@ -56,7 +57,7 @@ def upgrade(migrate_engine):
                           nullable=False),
         sqlalchemy.Column("instance_id", sqlalchemy.String(255),
                           nullable=False),
-        sqlalchemy.Column("connection_info", sqlalchemy.Text, nullable=False),
+        sqlalchemy.Column("connection_data", sqlalchemy.Text, nullable=False),
         sqlalchemy.Column("application_id", sqlalchemy.String(36),
                           sqlalchemy.ForeignKey(
                               'application.id'), nullable=False),
